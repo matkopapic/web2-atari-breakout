@@ -30,11 +30,13 @@ const paddle = {
     x: canvas.width / 2 - 50,
     y: canvas.height - 50,
     velocity: 0,
+    maxAbsVelocity: 400,
     width: 100,
     height: 10,
     color: "rgb(255, 255, 255)",
 }
 
+const initialBallVelocity = 300
 const ball = {
     width: 15,
     height: 15,
@@ -42,7 +44,7 @@ const ball = {
     y: paddle.y - 20,
     xVelocity: 0,
     yVelocity: 0,
-    maxAbsVelocity: 5,
+    maxAbsVelocity: 400,
     velocityMultiplier: 1,
     color: "rgb(255, 255, 255)",
 };
@@ -62,8 +64,8 @@ function setInitialState() {
 
     ball.x = paddle.x + paddle.width / 2 - ball.width / 2;
     ball.y = paddle.y - ball.height;
-    ball.xVelocity = 3;
-    ball.yVelocity = -3;
+    ball.xVelocity = initialBallVelocity;
+    ball.yVelocity = -initialBallVelocity;
 
     for (let row = 0; row < bricksConfig.rows; row++) {
         for (let col = 0; col < bricksConfig.countPerRow; col++) {
@@ -138,16 +140,16 @@ function draw() {
     if (gameState.isInitialMenu) drawInitialMenu();
 }
 
-function update() {
+function update(delta) {
     if (paddle.velocity !== 0) {
-        paddle.x = coerceIn(0, paddle.x + paddle.velocity, canvas.width - paddle.width)
+        paddle.x = coerceIn(0, paddle.x + paddle.velocity * delta, canvas.width - paddle.width)
     }
     if (ball.xVelocity !== 0) {
-        ball.x = coerceIn(0, ball.x + ball.xVelocity, canvas.width - ball.width)
+        ball.x = coerceIn(0, ball.x + ball.xVelocity * delta, canvas.width - ball.width)
         if (ball.x <= 0 || ball.x >= canvas.width - ball.width) ball.xVelocity = -ball.xVelocity;
     }
     if (ball.yVelocity !== 0) {
-        ball.y = coerceIn(0, ball.y + ball.yVelocity, canvas.height - ball.height)
+        ball.y = coerceIn(0, ball.y + ball.yVelocity * delta, canvas.height - ball.height)
         if (ball.y <= 0) {
             ball.yVelocity = -ball.yVelocity;
         } else if (ball.y >= canvas.height - ball.height) {
@@ -159,15 +161,19 @@ function update() {
     handlePaddleCollision(ball, paddle, paddle);
 }
 
-function run() {
-    if (!gameState.isGameOver && !gameState.isInitialMenu) update();
+let lastFrame = 0;
+
+function run(timestamp) {
+    const delta = (timestamp - lastFrame) / 1000;
+    lastFrame = timestamp;
+    if (!gameState.isGameOver && !gameState.isInitialMenu) update(delta);
     draw();
     requestAnimationFrame(run);
 }
 
 window.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft') paddle.velocity = -4;
-    if (e.key === 'ArrowRight') paddle.velocity = 4;
+    if (e.key === 'ArrowLeft') paddle.velocity = -paddle.maxAbsVelocity;
+    if (e.key === 'ArrowRight') paddle.velocity = paddle.maxAbsVelocity;
     if (e.key === " " && (gameState.isGameOver || gameState.isInitialMenu)) {
         gameState.isInitialMenu = false;
         gameState.isGameOver = false;
