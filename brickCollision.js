@@ -16,12 +16,14 @@ export function handleBrickCollision(ball, bricks, bricksConfig, canvas, gameSta
             if (bricks[row][col] === 1) {
                 const x = horizontalSpacing + col * (brickWidth + horizontalSpacing);
 
+                // if there is a brick collision, remove it in bricks array, increase score, and check if all bricks are removed
                 if (brickCollision(ball, x, y, brickWidth, height)) {
                     bricks[row][col] = 0;
                     gameState.currentScore++;
                     if (gameState.currentScore === bricksConfig.rows * bricksConfig.countPerRow) {
                         gameState.isGameOver = true;
                     }
+                    // increase ball velocity by 2% if brick is hit
                     ball.yVelocity *= 1.02;
                 }
             }
@@ -40,6 +42,7 @@ function brickCollision(ball, brickX, brickY, brickW, brickH) {
     const brickTop = brickY;
     const brickBottom = brickY + brickH;
 
+    // early return if we are not overlapping
     if (
         ballRight < brickLeft ||
         ballLeft > brickRight ||
@@ -56,6 +59,7 @@ function brickCollision(ball, brickX, brickY, brickW, brickH) {
 
     const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
 
+    // depending on which side of brick is hit, deflect the ball in appropriate direction
     if (minOverlap === overlapLeft) {
         ball.xVelocity = -Math.abs(ball.xVelocity);
     } else if (minOverlap === overlapRight) {

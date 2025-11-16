@@ -9,6 +9,7 @@ export function handlePaddleCollision(ball, paddle) {
     const paddleLeft = paddle.x;
     const paddleRight = paddle.x + paddle.width;
 
+    // if ball is to the right, left or above the paddle, it's not colliding
     if (
         ballRight < paddleLeft ||
         ballLeft > paddleRight ||
@@ -17,8 +18,11 @@ export function handlePaddleCollision(ball, paddle) {
         return false;
     }
 
+    // ball will always deflect upwards
     ball.yVelocity = -Math.abs(ball.yVelocity);
+
     if (paddle.velocity !== 0) {
+        // considering paddle velocity, nudge the ball in that direction
         const newVelocity = ball.xVelocity + 0.25 * ball.maxAbsVelocity * Math.abs(paddle.velocity) / paddle.velocity
         ball.xVelocity = coerceIn(-ball.maxAbsVelocity, newVelocity, ball.maxAbsVelocity);
     }
