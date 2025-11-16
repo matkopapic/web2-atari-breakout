@@ -1,4 +1,4 @@
-export function handleBrickCollision(ball, bricks, bricksConfig, canvas) {
+export function handleBrickCollision(ball, bricks, bricksConfig, canvas, gameState) {
     const {
         rows,
         countPerRow,
@@ -10,7 +10,7 @@ export function handleBrickCollision(ball, bricks, bricksConfig, canvas) {
     const totalSpacing = horizontalSpacing * (countPerRow + 1);
     const brickWidth = (canvas.width - totalSpacing) / countPerRow;
     for (let row = 0; row < rows; row++) {
-        const y = row * (height + verticalSpacing) + verticalSpacing;
+        const y = row * (height + verticalSpacing) + bricksConfig.initialY;
 
         for (let col = 0; col < countPerRow; col++) {
             if (bricks[row][col] === 1) {
@@ -18,6 +18,11 @@ export function handleBrickCollision(ball, bricks, bricksConfig, canvas) {
 
                 if (brickCollision(ball, x, y, brickWidth, height)) {
                     bricks[row][col] = 0;
+                    gameState.currentScore++;
+                    if (gameState.currentScore === bricksConfig.rows * bricksConfig.countPerRow) {
+                        gameState.isGameOver = true;
+                    }
+                    ball.yVelocity *= 1.02;
                 }
             }
         }

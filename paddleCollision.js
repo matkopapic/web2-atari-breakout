@@ -19,7 +19,7 @@ export function handlePaddleCollision(ball, paddle) {
 
     ball.yVelocity = -Math.abs(ball.yVelocity);
     if (paddle.velocity !== 0) {
-        const newVelocity = ball.xVelocity + Math.abs(paddle.velocity) / paddle.velocity
+        const newVelocity = ball.xVelocity + 0.25 * ball.maxAbsVelocity * Math.abs(paddle.velocity) / paddle.velocity
         ball.xVelocity = coerceIn(-ball.maxAbsVelocity, newVelocity, ball.maxAbsVelocity);
     }
 
