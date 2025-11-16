@@ -202,7 +202,7 @@ function update(delta) {
             ball.yVelocity = -ball.yVelocity;
         } else if (ball.y >= canvas.height - ball.height) {
             gameOver()
-            if (localStorage['highScore'] < gameState.currentScore) {
+            if (!localStorage['highScore'] || localStorage['highScore'] < gameState.currentScore) {
                 localStorage['highScore'] = gameState.currentScore
             }
         }
