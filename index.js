@@ -97,12 +97,19 @@ function drawBackground() {
 function drawPaddle() {
     ctx.save();
     ctx.fillStyle = paddle.color;
+    ctx.shadowColor = "grey";
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 4;
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+
     ctx.restore();
 }
 
 function drawBall() {
     ctx.save();
+    ctx.shadowColor = "grey";
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 4;
     ctx.fillStyle = ball.color;
     ctx.fillRect(ball.x, ball.y, ball.width, ball.height);
     ctx.restore();
@@ -110,6 +117,8 @@ function drawBall() {
 
 function drawBricks() {
     ctx.save();
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 4;
     const {
         rows,
         countPerRow,
@@ -124,12 +133,13 @@ function drawBricks() {
     for (let row = 0; row < rows; row++) {
         // y coordinate for the current row of bricks
         const y = row * (height + verticalSpacing) + bricksConfig.initialY;
-
+        const alpha = 0.3;
+        const color = brickColors[row];
+        ctx.shadowColor = color.replace("rgb", "rgba").replace(")", `, ${alpha})`);
         for (let col = 0; col < countPerRow; col++) {
             // if present draw the brick
             if (bricks[row][col] === 1) {
                 const x = horizontalSpacing + col * (brickWidth + horizontalSpacing);
-
                 ctx.fillStyle = brickColors[row];
                 ctx.fillRect(x, y, brickWidth, height);
             }
